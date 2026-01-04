@@ -1,0 +1,40 @@
+---
+name: GitHub Super-Linter
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch: # Allows you to run this manually from the Actions tab
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    # *** FORCING THE CORRECT EXECUTION IMAGE HERE ***
+    container: docker.io/catthehacker/ubuntu:js-24.04
+
+    permissions:
+      contents: read
+      packages: read
+      # To report GitHub Actions status checks
+      statuses: write
+
+    steps:
+      - name: Check out Git repository 🚦
+        uses: actions/checkout@v5
+        with:
+          # super-linter needs the full git history to get the
+          # list of files that changed across commits
+          fetch-depth: 0
+
+      - name: Run GitHub Super Linter 🚀
+        uses: super-linter/super-linter/slim@v8.3.2
+        env:
+          VALIDATE_ALL_CODEBASE: true
+          DEFAULT_BRANCH: main
+          # DISABLES external API calls that cause 401 errors
+          RUN_LOCAL: true
+          # NOTICE hides the list of all tools and versions
+          LOG_LEVEL: NOTICE
+          VALIDATE_HTML: true
+          VALIDATE_HTML_PRETTIER: true
